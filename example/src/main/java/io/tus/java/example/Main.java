@@ -10,6 +10,9 @@ import io.tus.java.client.TusExecutor;
 import io.tus.java.client.TusURLMemoryStore;
 import io.tus.java.client.TusUpload;
 import io.tus.java.client.TusUploader;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Base64;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,7 +28,14 @@ public class Main {
 
             // Configure tus HTTP endpoint. This URL will be used for creating new uploads
             // using the Creation extension
-            client.setUploadCreationURL(new URL("https://master.tus.io/files/"));
+            client.setUploadCreationURL(new URL("https://thesis.mosorio.me/files/"));
+
+            // Authentication using basic auth
+            // TODO: obtain username and password from a file
+            String encoding = Base64.getEncoder().encodeToString(("username:password").getBytes());
+            Map<String, String> headers = new LinkedHashMap<String, String>();
+            headers.put("Authorization", "Basic " + encoding);
+            client.setHeaders(headers);
 
             // Enable resumable uploads by storing the upload URL in memory
             client.enableResuming(new TusURLMemoryStore());
@@ -35,6 +45,14 @@ public class Main {
             // See the documentation for more information.
             File file = new File("./example/assets/prairie.jpg");
             final TusUpload upload = new TusUpload(file);
+
+            // Metadata example
+            // Map<String, String> metadata = new LinkedHashMap<String, String>();
+            //metadata.put("foo", "hello");
+            //metadata.put("bar", "world");
+            //metadata.putAll(upload.getMetadata());
+            //upload.setMetadata(metadata);
+
 
             // You can also upload from an InputStream directly using a bit more work:
             // InputStream stream = …;
@@ -84,6 +102,7 @@ public class Main {
         } catch(Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Exit");
 
     }
 }
